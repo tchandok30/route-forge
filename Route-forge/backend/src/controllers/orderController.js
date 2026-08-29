@@ -1,5 +1,5 @@
 const orderService = require("../services/orderService");
-
+const { orderSchema } = require("../validators/orderValidator");
 const getOrders = (req, res) => {
 
     const orders = orderService.getOrders();
@@ -9,22 +9,16 @@ const getOrders = (req, res) => {
 };
 
 const createOrder = (req, res) => {
-    const { id, weight, priority } = req.body;
-    if (!id || !weight || !priority) {
+   
+    const result = orderSchema.safeParse(req.body);
+
+    if (!result.success) {
         return res.status(400).json({
-            message: "Missing required fields"
+            message: "Invalid order data",
+            errors: result.error.issues
         });
     }
-    if (weight <= 0) {
-        return res.status(400).json({
-            message: "Weight must be greater than 0"
-        });
-    }
-    const order = orderService.createOrder({
-        id,
-        weight,
-        priority
-    });
+    const order = orderService.createOrder(result.data);
 
     res.status(201).json(order);
 };
