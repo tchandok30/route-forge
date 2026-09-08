@@ -1,11 +1,14 @@
 const { z } = require("zod");
 
 const orderSchema = z.object({
-    id: z.string().min(1),
+    customerName: z.string().min(2),
     weight: z.number().positive(),
-    priority: z.enum(["LOW", "NORMAL", "HIGH", "CRITICAL"])
+    priority: z.string().min(1),
+    deadline: z.string().datetime(),
+    status: z.string().optional(),
+    deliveryCost: z.number().nonnegative().optional(),
+    pickupLocationId: z.number().int().positive(),
+    deliveryLocationId: z.number().int().positive()
 });
 
-module.exports = {
-    orderSchema
-};
+module.exports = orderSchema;

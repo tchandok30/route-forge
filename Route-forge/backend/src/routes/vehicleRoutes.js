@@ -1,11 +1,15 @@
 const express = require("express");
-
+const getallvehicles = require("../controllers/vehicleController").getallvehicles;
+const getvehiclebyid = require("../controllers/vehicleController").getvehiclebyid;
 const router = express.Router();
-
-router.get("/", (req, res) => {
-    res.json({
-        message: "Vehicles API"
-    });
-});
-
+const createvehicle = require("../controllers/vehicleController").createvehicle;
+const updateVehicle = require("../controllers/vehicleController").updateVehicle;
+const deleteVehicle = require("../controllers/vehicleController").deletevehicle;
+const { vehicleSchema } = require("../validators/vehicleValidator");
+const validate = require("../middleware/validate");
+router.get("/", getallvehicles);
+router.post("/", validate(vehicleSchema), createvehicle);
+router.get("/:id", getvehiclebyid);
+router.patch("/:id", validate(vehicleSchema), updateVehicle);
+router.delete("/:id", validate(vehicleSchema), deleteVehicle);
 module.exports = router;

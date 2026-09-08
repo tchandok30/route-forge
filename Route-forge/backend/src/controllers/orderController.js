@@ -1,41 +1,77 @@
-const orderService = require("../services/orderService");
-const { orderSchema } = require("../validators/orderValidator");
-const getOrders = (req, res) => {
+const orderservice = require("../services/orderService");
 
-    const orders = orderService.getOrders();
+const getallorders = async (req, res, next) => {
+    try {
+        const orders = await orderservice.getallorders();
 
-    res.status(200).json(orders);
-
+        res.status(200).json({
+            message: "All orders retrieved successfully",
+            data: orders
+        });
+    } catch (err) {
+        next(err);
+    }
 };
 
-const createOrder = (req, res) => {
-   
-    const result = orderSchema.safeParse(req.body);
+const getorderbyid = async (req, res, next) => {
+    try {
+        const order = await orderservice.getorderbyid(req.params.id);
 
-    if (!result.success) {
-        return res.status(400).json({
-            message: "Invalid order data",
-            errors: result.error.issues
-        });
+        if (!order) {
+            return res.status(404).json({
+                message: "Order not found"
+            });
+        }
+
+        res.status(200).json(order);
+    } catch (err) {
+        next(err);
     }
-    const order = orderService.createOrder(result.data);
+};
 
-    res.status(201).json(order);
+const createorder = async (req, res, next) => {
+    try {
+        const order = await orderservice.createorder(req.body);
+
+        res.status(201).json({
+            message: "Order created successfully",
+            data: order
+        });
+    } catch (err) {
+        next(err);
+    }
+};
+
+const updateorder = async (req, res, next) => {
+    try {
+        const order = await orderservice.updateorder(
+            req.params.id,
+            req.body
+        );
+
+        res.status(200).json({
+            message: "Order updated successfully",
+            data: order
+        });
+    } catch (err) {
+        next(err);
+    }
+};
+
+const deleteorder = async (req, res, next) => {
+    try {
+        await orderservice.deleteorder(req.params.id);
+
+        res.status(204).send();
+    } catch (err) {
+        next(err);
+    }
 };
 
 module.exports = {
-    getOrders,
-    createOrder
+    getallorders,
+    getorderbyid,
+    createorder,
+    updateorder,
+    deleteorder
 };
-// Controller deals with HTTP.Service deals with application logic.
-        //      POST /api/orders
-        //             ↓
-        //      orderRoutes.js
-        //             ↓
-        //      createOrder()
-        //             ↓
-        //   orderController.js
-        //             ↓
-        //       response
-        //             ↓
-        //          Postman
